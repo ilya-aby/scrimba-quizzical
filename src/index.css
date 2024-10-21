@@ -33,7 +33,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2em;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   max-width: 800px;
   margin: 2em auto;
@@ -104,12 +104,6 @@ button:hover:not(.reveal):hover {
   font-weight: 500;
 }
 
-.answer-btn:not(.reveal):hover {
-  background-color: #4D5B9E;
-  color: #F5F7FB;
-  transition: background-color 0.1s, color 0.1s;
-}
-
 .reveal {
   opacity: 0.5;
 }
@@ -145,5 +139,20 @@ hr {
 
   h2 {
     font-size: 1.2rem;
+  }
+}
+
+/* Prevent unintended hover effects on touch devices */
+@media (hover: hover) {
+  button:hover:not(.reveal):hover {
+    background-color: #3B4A8B; /* Darker shade of the original color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.1s, box-shadow 0.1s;
+  }
+
+  .answer-btn:not(.reveal):hover {
+    background-color: #4D5B9E;
+    color: #F5F7FB;
+    transition: background-color 0.1s, color 0.1s;
   }
 }
