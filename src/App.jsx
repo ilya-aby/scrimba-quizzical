@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { decode } from 'html-entities';
 import { nanoid } from 'nanoid';
 import Question from './components/Question.jsx';
-import { Fragment } from 'react';
+import categories from './categories.js';
+
 const APIConfig = {
   baseUrl: 'https://opentdb.com/api.php',
   amount: 5,        // Questions per fetch
-  category: 11,     // Film
   type: 'multiple'  // Only multiple-choice, no true/false
 }
 
@@ -23,42 +23,46 @@ export default function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [error, setError] = useState(null);
-
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch(`${APIConfig.baseUrl}?amount=${APIConfig.amount}&category=${APIConfig.category}&type=${APIConfig.type}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP Error status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      data.results.forEach(question => {
-        question.question = decode(question.question);
-        question.correct_answer = decode(question.correct_answer);
-        question.incorrect_answers = question.incorrect_answers.map(answer => decode(answer));
-      });
-
-      const newQuestions = data.results.map(question => ({
-        questionText: question.question,
-        answers: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
-        correctAnswer: question.correct_answer,
-        selectedAnswer: null,
-        id: nanoid()
-      }));
-
-      setScore(0);
-      setCurrentQuestionIndex(0);
-      setQuestions(newQuestions);
-    } catch (error) {
-      setError(error.message);
-    }
-  }
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].id);
 
   useEffect(() => {
-    fetchQuestions();
-  }, []);
+    if (gameState === GameStates.PLAYING) {
+      const fetchQuestions = async () => {
+        try {
+          const response = await fetch(`${APIConfig.baseUrl}?amount=${APIConfig.amount}&category=${selectedCategory}&type=${APIConfig.type}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP Error status: ${response.status}`);
+          }
+  
+          const data = await response.json();
+  
+          const decodedResults = data.results.map(question => ({
+            ...question,
+            question: decode(question.question),
+            correct_answer: decode(question.correct_answer),
+            incorrect_answers: question.incorrect_answers.map(answer => decode(answer))
+          }));
+  
+          const newQuestions = decodedResults.map(question => ({
+            questionText: question.question,
+            answers: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
+            correctAnswer: question.correct_answer,
+            selectedAnswer: null,
+            id: nanoid()
+          }));
+  
+          setScore(0);
+          setCurrentQuestionIndex(0);
+          setQuestions(newQuestions);
+        } catch (error) {
+          setError(error.message);
+        }
+      };
+  
+      fetchQuestions();
+    }
+  }, [gameState, selectedCategory]);
 
   const handleAnswerSelected = (answer) => {
     if(currentQuestionIndex < questions.length - 1) {
@@ -76,6 +80,15 @@ export default function App() {
     ));
   }
 
+  const renderCategoryOptions = () => {
+    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+    return sortedCategories.map(category => (
+      <option key={category.id} value={category.id}>
+        {category.name}
+      </option>
+    ));
+  };
+
   return (
     <div className="game-container">
       {error && <p className="error-message">Error fetching questions: {error}. Please try again later.</p>}
@@ -86,6 +99,9 @@ export default function App() {
             <p className="subtitle">Test your knowledge</p>
           </div>
           <button onClick={() => setGameState(GameStates.PLAYING)}>Start quiz</button>
+          <select className="category-select" onChange={(e) => setSelectedCategory(e.target.value)} value={selectedCategory}>
+            {renderCategoryOptions()}
+          </select>
         </>
       )}
       {gameState === GameStates.PLAYING && questions.length > 0 && (
@@ -101,7 +117,6 @@ export default function App() {
           <h2>{score} out of {questions.length} correct</h2>
           <button onClick={() => {
             setQuestions([]);
-            fetchQuestions();
             setGameState(GameStates.PLAYING);
           }}>Play again</button>
           {questions.map(question => (
