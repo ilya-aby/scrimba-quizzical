@@ -112,9 +112,14 @@ button {
 }
 
 hr {
-  /* border: 1px solid #DBDEF0; */
   border: 0.9px solid #4D5B9E;
   width: 100%;
+}
+
+.error-message {
+  color: #e42222;
+  font-weight: 700;
+  text-align: center;
 }
 
 @media (min-width: 768px) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { decode } from 'html-entities';
 import { nanoid } from 'nanoid';
 import Question from './components/Question.jsx';
-
+import { Fragment } from 'react';
 const APIConfig = {
   baseUrl: 'https://opentdb.com/api.php',
   amount: 5,        // Questions per fetch
@@ -22,28 +22,38 @@ export default function App() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [error, setError] = useState(null);
 
   const fetchQuestions = async () => {
-    const response = await fetch(`${APIConfig.baseUrl}?amount=${APIConfig.amount}&category=${APIConfig.category}&type=${APIConfig.type}`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`${APIConfig.baseUrl}?amount=${APIConfig.amount}&category=${APIConfig.category}&type=${APIConfig.type}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP Error status: ${response.status}`);
+      }
 
-    data.results.forEach(question => {
-      question.question = decode(question.question);
-      question.correct_answer = decode(question.correct_answer);
-      question.incorrect_answers = question.incorrect_answers.map(answer => decode(answer));
-    });
+      const data = await response.json();
 
-    const newQuestions = data.results.map(question => ({
-      questionText: question.question,
-      answers: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
-      correctAnswer: question.correct_answer,
-      selectedAnswer: null,
-      id: nanoid()
-    }));
+      data.results.forEach(question => {
+        question.question = decode(question.question);
+        question.correct_answer = decode(question.correct_answer);
+        question.incorrect_answers = question.incorrect_answers.map(answer => decode(answer));
+      });
 
-    setScore(0);
-    setCurrentQuestionIndex(0);
-    setQuestions(newQuestions);
+      const newQuestions = data.results.map(question => ({
+        questionText: question.question,
+        answers: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
+        correctAnswer: question.correct_answer,
+        selectedAnswer: null,
+        id: nanoid()
+      }));
+
+      setScore(0);
+      setCurrentQuestionIndex(0);
+      setQuestions(newQuestions);
+    } catch (error) {
+      setError(error.message);
+    }
   }
 
   useEffect(() => {
@@ -68,6 +78,7 @@ export default function App() {
 
   return (
     <div className="game-container">
+      {error && <p className="error-message">Error fetching questions: {error}. Please try again later.</p>}
       {gameState === GameStates.INTRO && (  
         <>
           <div>
@@ -94,15 +105,14 @@ export default function App() {
             setGameState(GameStates.PLAYING);
           }}>Play again</button>
           {questions.map(question => (
-            <>
+            <Fragment key={question.id}>
               <hr />
-              <Question 
-                key={question.id}
+              <Question
                 question={question}
                 onAnswerSelected={null}
                 showAnswers={true}
               />
-            </>
+            </Fragment>
           ))}
         </>
       )}
