@@ -1,7 +1,7 @@
 export default [
   {
     "id": 9,
-    "name": "General Knowledge"
+    "name": "General Trivia"
   },
   {
     "id": 10,
@@ -17,7 +17,7 @@ export default [
   },
   {
     "id": 13,
-    "name": "Musicals & Theatre"
+    "name": "Theater"
   },
   {
     "id": 14,

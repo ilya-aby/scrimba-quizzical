@@ -138,7 +138,6 @@ export default function App() {
         <>
           <h2>{score} out of {questions.length} correct</h2>
           <button onClick={() => {
-            setQuestions([]);
             setGameState(GameStates.LOADING);
           }}>Play again</button>
           {renderCategorySelector()}

@@ -35,13 +35,15 @@ body {
   font-weight: 500;
   color: #293264;
   cursor: pointer;
-  padding: 10px 10px 10px 30px;
+  padding: 10px 30px 10px 30px;
   text-align: center;
+  border-radius: 15px;
+  border: 0.25px solid #4D5B9E;
 
   /* Chevron icon */
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="grey" d="M7 10l5 5 5-5z"/></svg>'); /* Chevron icon */
   background-repeat: no-repeat;
-  background-position: left 10px center; /* Position the chevron */
+  background-position: right 10px center; /* Position the chevron */
   background-size: 1.25rem; /* Size of the chevron */
 }
 
