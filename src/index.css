@@ -33,7 +33,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2em;
-  min-height: 100dvh;
+  min-height: calc(100dvh - 4em);
   width: 100%;
   max-width: 800px;
   margin: 2em auto;

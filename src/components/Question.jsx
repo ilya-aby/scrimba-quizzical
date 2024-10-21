@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 export default function Question({ question, onAnswerSelected, showAnswers }) {
   return (
     <div className="question-container">
