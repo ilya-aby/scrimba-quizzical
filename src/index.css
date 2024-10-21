@@ -8,11 +8,13 @@ html, body {
   height: 100vh;
   width: 100%;
   color: #293264;
+  overflow: auto;
 }
 
 #root {
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 
 h1, h2, h3, p {
@@ -31,16 +33,18 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2em;
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 2em auto;
   padding: 0 1em;
+  overflow-y: auto;
 }
 
 h1 {
   font-size: 2rem;
   font-weight: 700;
+  text-align: center;
 }
 
 p {
@@ -64,7 +68,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:hover:not(.reveal):hover {
   background-color: #3B4A8B; /* Darker shade of the original color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: background-color 0.1s, box-shadow 0.1s;
@@ -92,7 +96,7 @@ button:hover {
   width: 100%;
 }
 
-.answer-button {
+.answer-btn {
   border: 0.79px solid #4D5B9E;
   background-color: transparent;
   color: #293264;
@@ -100,8 +104,46 @@ button:hover {
   font-weight: 500;
 }
 
-.answer-button:hover {
+.answer-btn:not(.reveal):hover {
   background-color: #4D5B9E;
   color: #F5F7FB;
   transition: background-color 0.1s, color 0.1s;
+}
+
+.reveal {
+  opacity: 0.5;
+}
+
+.correct {
+  background-color: #94D7A2;
+  opacity: 1;
+}
+
+.incorrect {
+  background-color: #F8BCBC;
+}
+
+hr {
+  /* border: 1px solid #DBDEF0; */
+  border: 0.9px solid #4D5B9E;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .answers-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5em;
+    flex-wrap: wrap;
+    margin-top: 1.75em;
+  }
+
+  .answer-btn {
+    width: calc(50% - 0.75em)
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
 }

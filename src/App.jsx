@@ -3,7 +3,6 @@ import { decode } from 'html-entities';
 import { nanoid } from 'nanoid';
 import Question from './components/Question.jsx';
 
-
 const APIConfig = {
   baseUrl: 'https://opentdb.com/api.php',
   amount: 5,        // Questions per fetch
@@ -42,6 +41,8 @@ export default function App() {
       id: nanoid()
     }));
 
+    setScore(0);
+    setCurrentQuestionIndex(0);
     setQuestions(newQuestions);
   }
 
@@ -76,17 +77,34 @@ export default function App() {
           <button onClick={() => setGameState(GameStates.PLAYING)}>Start quiz</button>
         </>
       )}
-      {gameState === GameStates.PLAYING && (
+      {gameState === GameStates.PLAYING && questions.length > 0 && (
         <Question 
           key={questions[currentQuestionIndex].id}
           question={questions[currentQuestionIndex]}
           onAnswerSelected={handleAnswerSelected}
+          showAnswers={false}
         />
       )}
       {gameState === GameStates.END && (
-        <div>
+        <>
           <h2>You scored {score} / {questions.length} correct answers</h2>
-        </div>
+          <button onClick={() => {
+            setQuestions([]);
+            fetchQuestions();
+            setGameState(GameStates.PLAYING);
+          }}>Play again</button>
+          {questions.map(question => (
+            <>
+              <hr />
+              <Question 
+                key={question.id}
+                question={question}
+                onAnswerSelected={null}
+                showAnswers={true}
+              />
+            </>
+          ))}
+        </>
       )}
     </div>
   )
