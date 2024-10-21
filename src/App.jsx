@@ -98,7 +98,7 @@ export default function App() {
       )}
       {gameState === GameStates.END && (
         <>
-          <h2>You scored {score} / {questions.length} correct answers</h2>
+          <h2>{score} out of {questions.length} correct</h2>
           <button onClick={() => {
             setQuestions([]);
             fetchQuestions();

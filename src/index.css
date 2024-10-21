@@ -8,7 +8,6 @@ html, body {
   height: 100vh;
   width: 100%;
   color: #293264;
-  overflow: auto;
 }
 
 #root {
