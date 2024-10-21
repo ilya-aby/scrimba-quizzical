@@ -7,6 +7,8 @@ A React quiz game built for the Scrimba front-end developer path. Used as a lear
 ## Features
 
 - Uses the [Open Trivia Database](https://opentdb.com/) to fetch random trivia questions
+- Supports user category selection
+- Resilient to API errors & handles user retries
 - Dynamically renders game via React components
 - Responsive design /w media queries
 
