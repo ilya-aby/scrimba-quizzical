@@ -12,8 +12,10 @@ const APIConfig = {
 
 const GameStates = {
   INTRO: 'intro',
+  LOADING: 'loading',
   PLAYING: 'playing',
-  END: 'end'
+  END: 'end',
+  ERROR: 'error'
 }
 
 export default function App() {
@@ -26,7 +28,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(categories[0].id);
 
   useEffect(() => {
-    if (gameState === GameStates.PLAYING) {
+    if (gameState === GameStates.LOADING) {
       const fetchQuestions = async () => {
         try {
           const response = await fetch(`${APIConfig.baseUrl}?amount=${APIConfig.amount}&category=${selectedCategory}&type=${APIConfig.type}`);
@@ -55,8 +57,10 @@ export default function App() {
           setScore(0);
           setCurrentQuestionIndex(0);
           setQuestions(newQuestions);
+          setGameState(GameStates.PLAYING);
         } catch (error) {
           setError(error.message);
+          setGameState(GameStates.ERROR);
         }
       };
   
@@ -80,28 +84,46 @@ export default function App() {
     ));
   }
 
-  const renderCategoryOptions = () => {
-    const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
-    return sortedCategories.map(category => (
-      <option key={category.id} value={category.id}>
-        {category.name}
-      </option>
-    ));
+  const renderCategorySelector = () => {
+    const renderCategoryOptions = () => {
+      const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+      return sortedCategories.map(category => (
+        <option key={category.id} value={category.id}>
+          {category.name}
+        </option>
+      ));
+    };
+
+    return (
+      <select 
+        className="category-select" 
+        onChange={(e) => setSelectedCategory(e.target.value)} 
+        value={selectedCategory}
+      >
+        {renderCategoryOptions()}
+      </select>
+    );
   };
 
   return (
     <div className="game-container">
-      {error && <p className="error-message">Error fetching questions: {error}. Please try again later.</p>}
       {gameState === GameStates.INTRO && (  
         <>
           <div>
             <h1>Quizzical</h1>
-            <p className="subtitle">Test your knowledge</p>
+            <p className="subtitle">Know it all?</p>
           </div>
-          <button onClick={() => setGameState(GameStates.PLAYING)}>Start quiz</button>
-          <select className="category-select" onChange={(e) => setSelectedCategory(e.target.value)} value={selectedCategory}>
-            {renderCategoryOptions()}
-          </select>
+          <button onClick={() => setGameState(GameStates.LOADING)}>Start quiz</button>
+          {renderCategorySelector()}
+        </>
+      )}
+      {gameState === GameStates.LOADING && (
+        <div className="spinner"></div>
+      )}
+      {gameState === GameStates.ERROR && (
+        <>
+          <p className="error-message">Error fetching questions: {error}. Please try again later.</p>
+          <button onClick={() => setGameState(GameStates.LOADING)}>Retry</button>
         </>
       )}
       {gameState === GameStates.PLAYING && questions.length > 0 && (
@@ -117,8 +139,9 @@ export default function App() {
           <h2>{score} out of {questions.length} correct</h2>
           <button onClick={() => {
             setQuestions([]);
-            setGameState(GameStates.PLAYING);
+            setGameState(GameStates.LOADING);
           }}>Play again</button>
+          {renderCategorySelector()}
           {questions.map(question => (
             <Fragment key={question.id}>
               <hr />
