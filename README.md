@@ -23,6 +23,7 @@ A React quiz game built for the Scrimba front-end developer path. Used as a lear
 ## Resources
 
 - [Figma design](https://www.figma.com/design/E9S5iPcm10f0RIHK8mCqKL/Quizzical-App)
+- [Open Trivia DB API](https://opentdb.com/api_config.php)
 
 ## Installation
 
